@@ -26,8 +26,9 @@ a [`render.yaml`](render.yaml) Blueprint that provisions all four on Render.
    full `https://host` form, which a Blueprint can't derive from the hostname
    alone.)
 
-The `preDeployCommand` runs `migrate` + `seed_demo`, so demo data is loaded.
-Demo login is printed by `seed_demo` (see `apps/core/management/commands/seed_demo.py`).
+The `buildCommand` runs `migrate` + `seed_demo` (idempotent — safe on every
+deploy), so demo data is loaded. Demo login is printed by `seed_demo`
+(see `apps/core/management/commands/seed_demo.py`).
 
 ## What works on the default `.onrender.com` URL
 

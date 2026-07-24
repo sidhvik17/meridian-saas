@@ -33,8 +33,8 @@ services:
     name: meridian-web
     runtime: python
     plan: free
-    buildCommand: "pip install -r requirements/production.txt && python manage.py collectstatic --noinput"
-    preDeployCommand: "python manage.py migrate --noinput && python manage.py seed_demo"
+    # Free tier has no preDeployCommand; migrate + (idempotent) seed run in build.
+    buildCommand: "pip install -r requirements/production.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput && python manage.py seed_demo"
     startCommand: "gunicorn config.wsgi:application --workers 2 --bind 0.0.0.0:$PORT"
     healthCheckPath: /healthz/
     envVars:
@@ -98,7 +98,7 @@ services:
       - key: PYTHON_VERSION
         value: "3.12.6"
       - key: DJANGO_SECRET_KEY
-        fromService: { type: web, name: meridian-web, property: envVarKey, envVarKey: DJANGO_SECRET_KEY }
+        fromService: { type: web, name: meridian-web, envVarKey: DJANGO_SECRET_KEY }
       - key: DJANGO_ALLOWED_HOSTS
         fromService: { type: web, name: meridian-web, property: host }
       - key: POSTGRES_DB
