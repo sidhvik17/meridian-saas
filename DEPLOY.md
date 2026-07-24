@@ -26,8 +26,11 @@ a [`render.yaml`](render.yaml) Blueprint that provisions all four on Render.
    full `https://host` form, which a Blueprint can't derive from the hostname
    alone.)
 
-The `buildCommand` runs `migrate` + `seed_demo` (idempotent — safe on every
-deploy), so demo data is loaded. Demo login is printed by `seed_demo`
+`collectstatic` + `migrate` + `seed_demo` run in the **startCommand** (not the
+build) because Render only injects generated/DB/service env vars at runtime —
+production settings can't even import without `DJANGO_SECRET_KEY`, so no
+`manage.py` call can run during build. All three are idempotent, so running on
+every container start is safe. Demo login is printed by `seed_demo`
 (see `apps/core/management/commands/seed_demo.py`).
 
 ## What works on the default `.onrender.com` URL

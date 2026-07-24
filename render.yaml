@@ -34,9 +34,12 @@ services:
     name: meridian-web
     runtime: python
     plan: free
-    # Free tier has no preDeployCommand; migrate + (idempotent) seed run in build.
-    buildCommand: "pip install -r requirements/production.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput && python manage.py seed_demo"
-    startCommand: "gunicorn config.wsgi:application --workers 2 --bind 0.0.0.0:$PORT"
+    # Render injects generated/DB/service env vars at RUNTIME only, not during
+    # build — so production settings (which require DJANGO_SECRET_KEY) can't be
+    # imported in buildCommand. Build just installs deps; collectstatic +
+    # migrate + (idempotent) seed run in startCommand where all env vars exist.
+    buildCommand: "pip install -r requirements/production.txt"
+    startCommand: "python manage.py collectstatic --noinput && python manage.py migrate --noinput && python manage.py seed_demo && gunicorn config.wsgi:application --workers 2 --bind 0.0.0.0:$PORT"
     healthCheckPath: /healthz/
     envVars:
       - key: DJANGO_SETTINGS_MODULE
