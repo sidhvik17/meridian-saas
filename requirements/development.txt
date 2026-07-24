@@ -1,0 +1,9 @@
+-r base.txt
+mypy==1.16.0
+django-stubs[compatible-mypy]==5.2.0
+djangorestframework-stubs==3.16.0
+ruff==0.11.13
+bandit==1.8.3
+pip-audit==2.9.0
+pytest==8.4.0
+pytest-django==4.11.1

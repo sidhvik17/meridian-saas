@@ -1,0 +1,9 @@
+# Pinned exactly; upgraded only via PR with `pip-audit` passing in CI.
+Django==5.2.3
+djangorestframework==3.16.0
+# redis client version is governed by the celery[redis] extra (kombu pin)
+celery[redis]==5.5.2
+psycopg[binary]==3.2.9
+argon2-cffi==25.1.0
+httpx==0.28.1
+whitenoise==6.9.0

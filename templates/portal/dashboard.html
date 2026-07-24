@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — {{ request.tenant.name }}{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+<div class="grid grid-3">
+  <div class="card"><div class="stat">{{ project_count }}</div>
+    <div class="stat-label">Projects</div></div>
+  <div class="card"><div class="stat">{{ open_item_count }}</div>
+    <div class="stat-label">Open work items</div></div>
+  <div class="card"><div class="stat">{{ member_count }}</div>
+    <div class="stat-label">Active members</div></div>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h2 style="margin-top:0;">Recent activity</h2>
+    {% if recent_items %}
+    <table>
+      <tr><th>Item</th><th>Project</th><th>Status</th><th>Assignee</th></tr>
+      {% for item in recent_items %}
+      <tr>
+        <td>{{ item.title }}</td>
+        <td><a href="{% url 'portal:project-detail' item.project_id %}">{{ item.project.key }}</a></td>
+        <td><span class="badge badge-{{ item.status }}">{{ item.get_status_display }}</span></td>
+        <td class="muted">{{ item.assignee.email|default:"—" }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}<p class="muted">No work items yet — create one under Projects.</p>{% endif %}
+  </div>
+
+  <div>
+    <div class="card">
+      <h2 style="margin-top:0;">Subscription</h2>
+      {% if subscription %}
+        <p style="margin:.2rem 0;"><strong>{{ subscription.get_plan_display }}</strong>
+          <span class="badge badge-{{ subscription.status }}">{{ subscription.get_status_display }}</span></p>
+        <p class="muted" style="margin:.2rem 0;">{{ subscription.seats }} seat{{ subscription.seats|pluralize }} ·
+          renews {{ subscription.current_period_end|date:"M j, Y" }}</p>
+      {% else %}<p class="muted">No active subscription.</p>{% endif %}
+    </div>
+    <div class="card">
+      <h2 style="margin-top:0;">Latest invoice</h2>
+      {% if latest_invoice %}
+        <p style="margin:.2rem 0;"><span class="mono">{{ latest_invoice.number }}</span>
+          <span class="badge badge-{{ latest_invoice.status }}">{{ latest_invoice.get_status_display }}</span></p>
+        <p class="muted" style="margin:.2rem 0;">{{ latest_invoice.currency }} {{ latest_invoice.total }}</p>
+        <a href="{% url 'portal:billing' %}">View billing →</a>
+      {% else %}<p class="muted">No invoices yet.</p>{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

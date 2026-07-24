@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Members — {{ request.tenant.name }}{% endblock %}
+{% block content %}
+<h1>Members</h1>
+<div class="grid grid-2">
+  <div class="card">
+    <table>
+      <tr><th>Email</th><th>Name</th><th>Role</th><th>Status</th><th>Joined</th></tr>
+      {% for membership in memberships %}
+      <tr>
+        <td>{{ membership.user.email }}</td>
+        <td class="muted">{{ membership.user.get_full_name }}</td>
+        <td><span class="badge badge-{{ membership.role }}">{{ membership.get_role_display }}</span></td>
+        <td>{% if membership.is_active %}<span class="badge badge-active">active</span>
+            {% else %}<span class="badge badge-void">inactive</span>{% endif %}</td>
+        <td class="muted">{{ membership.created_at|date:"M j, Y" }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Add member</h2>
+    <p class="muted" style="font-size:.85rem;">Existing user → attached to this
+      organisation. New email → account created with the given password.</p>
+    <form method="post">
+      {% csrf_token %}
+      <label for="{{ form.email.id_for_label }}">Email</label>
+      {{ form.email }} {{ form.email.errors }}
+      <label for="{{ form.role.id_for_label }}">Role</label>
+      {{ form.role }} {{ form.role.errors }}
+      <label for="{{ form.password.id_for_label }}">Password</label>
+      {{ form.password }} {{ form.password.errors }}
+      <div style="margin-top:1rem;"><button type="submit">Add member</button></div>
+    </form>
+  </div>
+</div>
+{% endblock %}

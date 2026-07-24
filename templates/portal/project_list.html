@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Projects — {{ request.tenant.name }}{% endblock %}
+{% block content %}
+<h1>Projects</h1>
+<div class="grid grid-2">
+  <div class="card">
+    {% if projects %}
+    <table>
+      <tr><th>Key</th><th>Name</th><th>Owner</th><th>Created</th><th></th></tr>
+      {% for project in projects %}
+      <tr>
+        <td class="mono">{{ project.key }}</td>
+        <td><a href="{% url 'portal:project-detail' project.pk %}">{{ project.name }}</a></td>
+        <td class="muted">{{ project.owner.email }}</td>
+        <td class="muted">{{ project.created_at|date:"M j, Y" }}</td>
+        <td>{% if project.is_archived %}<span class="badge badge-void">archived</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}<p class="muted">No projects yet — create the first one.</p>{% endif %}
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">New project</h2>
+    <form method="post">
+      {% csrf_token %}
+      <label for="{{ form.name.id_for_label }}">Name</label>
+      {{ form.name }} {{ form.name.errors }}
+      <label for="{{ form.key.id_for_label }}">Key <span class="muted">(e.g. CORE)</span></label>
+      {{ form.key }} {{ form.key.errors }}
+      <label for="{{ form.description.id_for_label }}">Description</label>
+      {{ form.description }} {{ form.description.errors }}
+      <div style="margin-top:1rem;"><button type="submit">Create project</button></div>
+    </form>
+  </div>
+</div>
+{% endblock %}

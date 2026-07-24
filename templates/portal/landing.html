@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Meridian — Multi-tenant SaaS{% endblock %}
+{% block content %}
+<div class="card" style="text-align:center; padding: 3rem 2rem;">
+  <h1 style="font-size:2rem;">Meridian</h1>
+  <p class="muted" style="max-width: 46rem; margin: 0 auto 1.5rem;">
+    Multi-tenant work management &amp; billing platform. Each organisation lives on
+    its own subdomain with row-level data isolation, role-based access, and an
+    auditable financial ledger.
+  </p>
+  <a class="btn" href="http://acme.localtest.me:8000/">Open demo tenant — Acme Corp</a>
+</div>
+<div class="grid grid-3">
+  <div class="card">
+    <h2 style="margin-top:0;">Tenant portal</h2>
+    <p class="muted">Dashboard, projects, work items, members, billing.</p>
+    <span class="mono">acme.localtest.me:8000</span>
+  </div>
+  <div class="card">
+    <h2 style="margin-top:0;">REST API v1</h2>
+    <p class="muted">Session-authenticated JSON API, tenant-scoped.</p>
+    <span class="mono">acme.localtest.me:8000/api/v1/projects/</span>
+  </div>
+  <div class="card">
+    <h2 style="margin-top:0;">Platform admin</h2>
+    <p class="muted">Tenants, domains, users (staff only).</p>
+    <span class="mono">localhost:8000/admin/</span>
+  </div>
+</div>
+{% endblock %}

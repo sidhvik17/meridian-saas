@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Billing — {{ request.tenant.name }}{% endblock %}
+{% block content %}
+<h1>Billing</h1>
+
+<div class="grid grid-2">
+  <div>
+    <div class="card">
+      <h2 style="margin-top:0;">Subscription</h2>
+      {% if subscription %}
+        <p><strong>{{ subscription.get_plan_display }}</strong>
+          <span class="badge badge-{{ subscription.status }}">{{ subscription.get_status_display }}</span>
+          · {{ subscription.seats }} seat{{ subscription.seats|pluralize }}
+          · period {{ subscription.current_period_start|date:"M j" }} –
+            {{ subscription.current_period_end|date:"M j, Y" }}</p>
+      {% else %}<p class="muted">No active subscription.</p>{% endif %}
+    </div>
+
+    {% for invoice in invoices %}
+    <div class="card">
+      <h2 style="margin-top:0;"><span class="mono">{{ invoice.number }}</span>
+        <span class="badge badge-{{ invoice.status }}">{{ invoice.get_status_display }}</span>
+        <span class="muted" style="float:right;">{{ invoice.currency }} {{ invoice.total }}</span></h2>
+      <table>
+        <tr><th>Ledger entry</th><th>Direction</th><th class="right">Amount</th></tr>
+        {% for entry in invoice.ledger_entries.all %}
+        <tr>
+          <td>{{ entry.memo }}</td>
+          <td><span class="badge {% if entry.direction == 'credit' %}badge-done{% else %}badge-open{% endif %}">{{ entry.get_direction_display }}</span></td>
+          <td class="right mono">{{ entry.amount }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% if invoice.status == "open" %}
+      <form class="inline" method="post" action="{% url 'portal:invoice-pay' invoice.pk %}" style="margin-top:.7rem; display:block;">
+        {% csrf_token %}
+        <button type="submit">Mark paid</button>
+        <span class="muted" style="font-size:.83rem;">creates credit ledger entry + fires invoice.paid webhook task</span>
+      </form>
+      {% endif %}
+      <p class="muted" style="font-size:.8rem; margin-bottom:0;">
+        issued {{ invoice.issued_at|date:"M j, Y H:i"|default:"—" }}
+        {% if invoice.paid_at %} · paid {{ invoice.paid_at|date:"M j, Y H:i" }}{% endif %}</p>
+    </div>
+    {% empty %}
+    <div class="card"><p class="muted" style="margin:0;">No invoices yet.</p></div>
+    {% endfor %}
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Issue invoice</h2>
+    <p class="muted" style="font-size:.85rem;">Runs the atomic billing service:
+      row-locked subscription, idempotency key, debit ledger entry.</p>
+    <form method="post">
+      {% csrf_token %}
+      <label for="{{ form.description.id_for_label }}">Line description</label>
+      {{ form.description }} {{ form.description.errors }}
+      <label for="{{ form.amount.id_for_label }}">Amount (USD)</label>
+      {{ form.amount }} {{ form.amount.errors }}
+      <div style="margin-top:1rem;"><button type="submit">Issue invoice</button></div>
+    </form>
+  </div>
+</div>
+{% endblock %}

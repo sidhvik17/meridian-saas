@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Sign in — Meridian{% endblock %}
+{% block content %}
+<div class="card" style="max-width: 420px; margin: 3rem auto;">
+  <h1>Sign in{% if request.tenant %} to {{ request.tenant.name }}{% endif %}</h1>
+  {% if form.errors %}
+    <ul class="errorlist"><li>Invalid email or password.</li></ul>
+  {% endif %}
+  <form method="post">
+    {% csrf_token %}
+    <label for="id_username">Email</label>
+    <input type="email" name="username" id="id_username" autofocus required>
+    <label for="id_password">Password</label>
+    <input type="password" name="password" id="id_password" required>
+    <input type="hidden" name="next" value="{{ next }}">
+    <div style="margin-top: 1rem;"><button type="submit">Sign in</button></div>
+  </form>
+  <p class="muted" style="margin-bottom:0; margin-top:1rem; font-size:.85rem;">
+    Demo: <span class="mono">demo@meridian.dev / demo-Passw0rd-2026</span>
+  </p>
+</div>
+{% endblock %}

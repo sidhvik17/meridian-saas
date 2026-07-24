@@ -1,0 +1,30 @@
+# Environments / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Django
+db.sqlite3
+/static/
+/media/
+local_settings.py
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

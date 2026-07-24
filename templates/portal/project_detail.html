@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ project.key }} — {{ request.tenant.name }}{% endblock %}
+{% block content %}
+<h1><span class="mono">{{ project.key }}</span> · {{ project.name }}</h1>
+<p class="muted">{{ project.description|default:"No description." }} —
+  owned by {{ project.owner.email }}</p>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h2 style="margin-top:0;">Work items</h2>
+    {% if items %}
+    <table>
+      <tr><th>Title</th><th>Status</th><th>Assignee</th><th>Due</th><th>Move to</th></tr>
+      {% for item in items %}
+      <tr>
+        <td>{{ item.title }}</td>
+        <td><span class="badge badge-{{ item.status }}">{{ item.get_status_display }}</span></td>
+        <td class="muted">{{ item.assignee.email|default:"—" }}</td>
+        <td class="muted">{{ item.due_at|date:"M j"|default:"—" }}</td>
+        <td>
+          <form class="inline" method="post" action="{% url 'portal:workitem-status' item.pk %}">
+            {% csrf_token %}
+            <select name="status" onchange="this.form.submit()" style="width:auto; padding:.25rem .4rem; font-size:.85rem;">
+              {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if value == item.status %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}<p class="muted">No work items yet.</p>{% endif %}
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;">Add work item</h2>
+    <form method="post">
+      {% csrf_token %}
+      <label for="{{ form.title.id_for_label }}">Title</label>
+      {{ form.title }} {{ form.title.errors }}
+      <label for="{{ form.status.id_for_label }}">Status</label>
+      {{ form.status }} {{ form.status.errors }}
+      <label for="{{ form.assignee.id_for_label }}">Assignee</label>
+      {{ form.assignee }} {{ form.assignee.errors }}
+      <label for="{{ form.due_at.id_for_label }}">Due</label>
+      {{ form.due_at }} {{ form.due_at.errors }}
+      <div style="margin-top:1rem;"><button type="submit">Add item</button></div>
+    </form>
+  </div>
+</div>
+{% endblock %}
