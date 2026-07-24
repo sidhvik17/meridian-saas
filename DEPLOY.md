@@ -47,11 +47,13 @@ tenant isolation live:
    `DJANGO_CSRF_TRUSTED_ORIGINS = https://*.meridian.app`.
 3. Seed/create tenants whose `Domain` rows match `acme.meridian.app`, etc.
 
-## Cost note
+## Cost note — deploys 100% free by default
 
-- `web`, `meridian-db`, `meridian-redis`: **free** tiers (free Postgres expires
-  ~30 days).
-- `meridian-worker`: Render background workers require a **paid** (`starter`)
-  instance. The web/UI works without it; only async billing tasks need it. To
-  run zero-cost, remove the `worker` service from `render.yaml` (billing tasks
-  just won't process in the background).
+- `web`, `meridian-db`, `meridian-redis`: **free** tiers. Free Postgres expires
+  ~30 days; the free web service sleeps after ~15 min idle (≈50s cold start on
+  the next request) — both fine for a portfolio/demo link.
+- `meridian-worker` (Celery): Render background workers require a **paid**
+  (`starter`) instance, so it is **commented out** in `render.yaml`. The web
+  app runs fully without it — billing tasks queue to Redis but aren't consumed
+  (no crash). Uncomment the worker block and pick a paid plan to enable async
+  billing.
